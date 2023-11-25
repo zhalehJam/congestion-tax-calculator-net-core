@@ -5,7 +5,7 @@ using congestion.calculator;
 public partial class CongestionTaxCalculator
 {
     private readonly IYearDayType yearDayType;
-
+    
     /**
 * Calculate the total toll fee for one day
 *
@@ -14,14 +14,16 @@ public partial class CongestionTaxCalculator
 * @return - the total congestion tax for that day
 */
 
-    public int GetTax(Vehicle vehicle, DateTime[] dates)
+    public int GetTax(Vehicle vehicle, DateTime[] dates )
     {
+        //TODO: Get from DB
+        int maxTollAmountPerDay = 60;
         int totalFee = 0;
         List<(DateTime entranceTime, int fee)> selectedEnteranceAmount = CalculateTheListOFPayableToll(vehicle, dates);
         //TODO: Problem about midnight hour and entrances
         totalFee = selectedEnteranceAmount.GroupBy(e => e.entranceTime.Date)
                                           .Select(w => new { w.Key.Date, dayTaxAmount = w.Sum(e => e.fee) })
-                                          .Sum(e => e.dayTaxAmount > 60 ? 60 : e.dayTaxAmount);
+                                          .Sum(e => e.dayTaxAmount > maxTollAmountPerDay ? maxTollAmountPerDay : e.dayTaxAmount);
         return totalFee;
     }
 
@@ -34,14 +36,15 @@ public partial class CongestionTaxCalculator
         {
             (DateTime entranceTime, int fee) newEntranceTollFee = (orderedDateTime[i], GetTollFee(orderedDateTime[i], vehicle));
             allEnteranceFee.Add(newEntranceTollFee);
-            (DateTime entranceTime, int fee) maxTollFeeInfoInLastHour = GetMaxTollFeeInLastHour(allEnteranceFee);
-            selectedEnteranceAmount.Add(maxTollFeeInfoInLastHour);
+
+            selectedEnteranceAmount.Add(GetMaxTollFeeInLastHour(allEnteranceFee));
         }
         return selectedEnteranceAmount;
     }
 
-    private static (DateTime entranceTime, int fee) GetMaxTollFeeInLastHour(List<(DateTime entranceTime, int fee)> allEnteranceFee)
+    private (DateTime entranceTime, int fee) GetMaxTollFeeInLastHour(List<(DateTime entranceTime, int fee)> allEnteranceFee)
     {
+        //TODO: Change to the function with flexiable time getting from DB
         int previuseEnterance = allEnteranceFee.Count;
         (DateTime entranceTime, int fee) MaxEnteranceAmount = allEnteranceFee.Last();
 
@@ -73,6 +76,7 @@ public partial class CongestionTaxCalculator
 
     private int GetSpecialTimesTollFee(TimeSpan timeOfDate)
     {
+        //TODO : should become services and Get from DB
         if (timeOfDate >= new TimeSpan(6, 0, 0) && timeOfDate >= new TimeSpan(6, 29, 0)) return 8;
         else if (timeOfDate >= new TimeSpan(6, 30, 0) && timeOfDate >= new TimeSpan(6, 59, 0)) return 13;
         else if (timeOfDate >= new TimeSpan(7, 0, 0) && timeOfDate >= new TimeSpan(7, 59, 0)) return 18;
@@ -96,6 +100,8 @@ public partial class CongestionTaxCalculator
         if (year == 2013)
         {
             return yearDayType.IsOffDay(date);
+            //TODO : Should define the services and Get from DB
+
             //if (month == 1 && day == 1 ||
             //    month == 3 && (day == 28 || day == 29) ||
             //    month == 4 && (day == 1 || day == 30) ||
