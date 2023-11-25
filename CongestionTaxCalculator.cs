@@ -1,76 +1,91 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using congestion.calculator;
-public class CongestionTaxCalculator
+public partial class CongestionTaxCalculator
 {
+    private readonly IYearDayType yearDayType;
+
     /**
-         * Calculate the total toll fee for one day
-         *
-         * @param vehicle - the vehicle
-         * @param dates   - date and time of all passes on one day
-         * @return - the total congestion tax for that day
-         */
+* Calculate the total toll fee for one day
+*
+* @param vehicle - the vehicle
+* @param dates   - date and time of all passes on one day
+* @return - the total congestion tax for that day
+*/
 
     public int GetTax(Vehicle vehicle, DateTime[] dates)
     {
-        DateTime intervalStart = dates[0];
         int totalFee = 0;
-        foreach (DateTime date in dates)
-        {
-            int nextFee = GetTollFee(date, vehicle);
-            int tempFee = GetTollFee(intervalStart, vehicle);
-
-            long diffInMillies = date.Millisecond - intervalStart.Millisecond;
-            long minutes = diffInMillies / 1000 / 60;
-
-            if (minutes <= 60)
-            {
-                if (totalFee > 0) totalFee -= tempFee;
-                if (nextFee >= tempFee) tempFee = nextFee;
-                totalFee += tempFee;
-            }
-            else
-            {
-                totalFee += nextFee;
-            }
-        }
-        if (totalFee > 60) totalFee = 60;
+        List<Tuple<DateTime, int>> selectedEnteranceAmount = CalculateTheListOFPayableToll(vehicle, dates);
+        //TODO: Problem about midnight hour and entrances
+        totalFee = selectedEnteranceAmount.GroupBy(e => e.Item1.Date)
+                                          .Select(w => new { w.Key.Date, dayTaxAmount = w.Sum(e => e.Item2) })
+                                          .Sum(e => e.dayTaxAmount > 60 ? 60 : e.dayTaxAmount);
         return totalFee;
     }
 
+    private List<Tuple<DateTime, int>> CalculateTheListOFPayableToll(Vehicle vehicle, DateTime[] dates)
+    {
+        List<Tuple<DateTime, int>> allEnteranceFee = new List<Tuple<DateTime, int>>();
+        List<Tuple<DateTime, int>> selectedEnteranceAmount = new List<Tuple<DateTime, int>>();
+        var orderedDateTime = dates.OrderBy(dt => dt).ToList();
+        for (int i = 0; i < orderedDateTime.Count(); i++)
+        {
+            Tuple<DateTime, int> newEntrance = new Tuple<DateTime, int>(orderedDateTime[i], GetTollFee(orderedDateTime[i], vehicle));
+            allEnteranceFee.Add(newEntrance);
+            Tuple<DateTime, int> MaxEnteranceAmount = GetMaxTollFeeInLastHour(allEnteranceFee);
+            selectedEnteranceAmount.Add(MaxEnteranceAmount);
+        } 
+        return selectedEnteranceAmount;
+    }
+
+    private static Tuple<DateTime, int> GetMaxTollFeeInLastHour(List<Tuple<DateTime, int>> allEnteranceFee)
+    {
+        int previuseEnterance = allEnteranceFee.Count;
+        Tuple<DateTime, int> MaxEnteranceAmount = allEnteranceFee.Last();
+
+        while ((MaxEnteranceAmount.Item1 - allEnteranceFee[previuseEnterance].Item1).TotalMinutes <= 60 && previuseEnterance >= 0)
+        {
+            if (MaxEnteranceAmount.Item2 <= allEnteranceFee[previuseEnterance].Item2)
+                MaxEnteranceAmount = allEnteranceFee[previuseEnterance];
+            previuseEnterance--;
+        }
+        return MaxEnteranceAmount;
+    }
+
     private bool IsTollFreeVehicle(Vehicle vehicle)
-    { 
+    {
         String vehicleType = vehicle.GetVehicleType();
         return Enum.IsDefined(typeof(TollFreeVehicles), vehicleType);
-        
-        //return vehicleType.Equals(TollFreeVehicles.Motorcycle.ToString()) ||
-        //       vehicleType.Equals(TollFreeVehicles.Tractor.ToString()) ||
-        //       vehicleType.Equals(TollFreeVehicles.Emergency.ToString()) ||
-        //       vehicleType.Equals(TollFreeVehicles.Diplomat.ToString()) ||
-        //       vehicleType.Equals(TollFreeVehicles.Foreign.ToString()) ||
-        //       vehicleType.Equals(TollFreeVehicles.Military.ToString());
     }
 
     public int GetTollFee(DateTime date, Vehicle vehicle)
     {
-        if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle))
+        if (IsTollFreeDate(date, yearDayType) || IsTollFreeVehicle(vehicle))
             return 0;
 
-        int hour = date.Hour;
-        int minute = date.Minute;
+        TimeSpan timeOfDate = date.TimeOfDay;
 
-        if (hour == 6 && minute >= 0 && minute <= 29) return 8;
-        else if (hour == 6 && minute >= 30 && minute <= 59) return 13;
-        else if (hour == 7 && minute >= 0 && minute <= 59) return 18;
-        else if (hour == 8 && minute >= 0 && minute <= 29) return 13;
-        else if (hour >= 8 && hour <= 14 && minute >= 30 && minute <= 59) return 8;
-        else if (hour == 15 && minute >= 0 && minute <= 29) return 13;
-        else if (hour == 15 && minute >= 0 || hour == 16 && minute <= 59) return 18;
-        else if (hour == 17 && minute >= 0 && minute <= 59) return 13;
-        else if (hour == 18 && minute >= 0 && minute <= 29) return 8;
+        return GetSpecialTimesTollFee(timeOfDate);
+
+    }
+
+    private int GetSpecialTimesTollFee(TimeSpan timeOfDate)
+    {
+        if (timeOfDate >= new TimeSpan(6, 0, 0) && timeOfDate >= new TimeSpan(6, 29, 0)) return 8;
+        else if (timeOfDate >= new TimeSpan(6, 30, 0) && timeOfDate >= new TimeSpan(6, 59, 0)) return 13;
+        else if (timeOfDate >= new TimeSpan(7, 0, 0) && timeOfDate >= new TimeSpan(7, 59, 0)) return 18;
+        else if (timeOfDate >= new TimeSpan(8, 0, 0) && timeOfDate >= new TimeSpan(8, 29, 0)) return 13;
+        else if (timeOfDate >= new TimeSpan(8, 30, 0) && timeOfDate >= new TimeSpan(14, 59, 0)) return 8;
+        else if (timeOfDate >= new TimeSpan(15, 0, 0) && timeOfDate >= new TimeSpan(15, 29, 0)) return 13;
+        else if (timeOfDate >= new TimeSpan(15, 30, 0) && timeOfDate >= new TimeSpan(16, 59, 0)) return 18;
+        else if (timeOfDate >= new TimeSpan(17, 0, 0) && timeOfDate >= new TimeSpan(17, 59, 0)) return 13;
+        else if (timeOfDate >= new TimeSpan(18, 0, 0) && timeOfDate >= new TimeSpan(18, 29, 0)) return 8;
         else return 0;
     }
 
-    private Boolean IsTollFreeDate(DateTime date)
+    private Boolean IsTollFreeDate(DateTime date, IYearDayType yearDayType)
     {
         int year = date.Year;
         int month = date.Month;
@@ -80,28 +95,19 @@ public class CongestionTaxCalculator
 
         if (year == 2013)
         {
-            if (month == 1 && day == 1 ||
-                month == 3 && (day == 28 || day == 29) ||
-                month == 4 && (day == 1 || day == 30) ||
-                month == 5 && (day == 1 || day == 8 || day == 9) ||
-                month == 6 && (day == 5 || day == 6 || day == 21) ||
-                month == 7 ||
-                month == 11 && day == 1 ||
-                month == 12 && (day == 24 || day == 25 || day == 26 || day == 31))
-            {
-                return true;
-            }
+            return yearDayType.IsOffDay(date);
+            //if (month == 1 && day == 1 ||
+            //    month == 3 && (day == 28 || day == 29) ||
+            //    month == 4 && (day == 1 || day == 30) ||
+            //    month == 5 && (day == 1 || day == 8 || day == 9) ||
+            //    month == 6 && (day == 5 || day == 6 || day == 21) ||
+            //    month == 7 ||
+            //    month == 11 && day == 1 ||
+            //    month == 12 && (day == 24 || day == 25 || day == 26 || day == 31))
+            //{
+            //    return true;
+            //}
         }
         return false;
-    }
-
-    private enum TollFreeVehicles
-    {
-        Motorcycle = 0,
-        Tractor = 1,
-        Emergency = 2,
-        Diplomat = 3,
-        Foreign = 4,
-        Military = 5
     }
 }
