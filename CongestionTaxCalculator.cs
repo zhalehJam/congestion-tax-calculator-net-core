@@ -17,37 +17,37 @@ public partial class CongestionTaxCalculator
     public int GetTax(Vehicle vehicle, DateTime[] dates)
     {
         int totalFee = 0;
-        List<Tuple<DateTime, int>> selectedEnteranceAmount = CalculateTheListOFPayableToll(vehicle, dates);
+        List<(DateTime entranceTime, int fee)> selectedEnteranceAmount = CalculateTheListOFPayableToll(vehicle, dates);
         //TODO: Problem about midnight hour and entrances
-        totalFee = selectedEnteranceAmount.GroupBy(e => e.Item1.Date)
-                                          .Select(w => new { w.Key.Date, dayTaxAmount = w.Sum(e => e.Item2) })
+        totalFee = selectedEnteranceAmount.GroupBy(e => e.entranceTime.Date)
+                                          .Select(w => new { w.Key.Date, dayTaxAmount = w.Sum(e => e.fee) })
                                           .Sum(e => e.dayTaxAmount > 60 ? 60 : e.dayTaxAmount);
         return totalFee;
     }
 
-    private List<Tuple<DateTime, int>> CalculateTheListOFPayableToll(Vehicle vehicle, DateTime[] dates)
+    private List<(DateTime entranceTime, int fee)> CalculateTheListOFPayableToll(Vehicle vehicle, DateTime[] dates)
     {
-        List<Tuple<DateTime, int>> allEnteranceFee = new List<Tuple<DateTime, int>>();
-        List<Tuple<DateTime, int>> selectedEnteranceAmount = new List<Tuple<DateTime, int>>();
+        List<(DateTime entranceTime, int fee)> allEnteranceFee = new List<(DateTime entranceTime, int fee)>();
+        List<(DateTime entranceTime, int fee)> selectedEnteranceAmount = new List<(DateTime entranceTime, int fee)>();
         var orderedDateTime = dates.OrderBy(dt => dt).ToList();
         for (int i = 0; i < orderedDateTime.Count(); i++)
         {
-            Tuple<DateTime, int> newEntrance = new Tuple<DateTime, int>(orderedDateTime[i], GetTollFee(orderedDateTime[i], vehicle));
-            allEnteranceFee.Add(newEntrance);
-            Tuple<DateTime, int> MaxEnteranceAmount = GetMaxTollFeeInLastHour(allEnteranceFee);
-            selectedEnteranceAmount.Add(MaxEnteranceAmount);
-        } 
+            (DateTime entranceTime, int fee) newEntranceTollFee = (orderedDateTime[i], GetTollFee(orderedDateTime[i], vehicle));
+            allEnteranceFee.Add(newEntranceTollFee);
+            (DateTime entranceTime, int fee) maxTollFeeInfoInLastHour = GetMaxTollFeeInLastHour(allEnteranceFee);
+            selectedEnteranceAmount.Add(maxTollFeeInfoInLastHour);
+        }
         return selectedEnteranceAmount;
     }
 
-    private static Tuple<DateTime, int> GetMaxTollFeeInLastHour(List<Tuple<DateTime, int>> allEnteranceFee)
+    private static (DateTime entranceTime, int fee) GetMaxTollFeeInLastHour(List<(DateTime entranceTime, int fee)> allEnteranceFee)
     {
         int previuseEnterance = allEnteranceFee.Count;
-        Tuple<DateTime, int> MaxEnteranceAmount = allEnteranceFee.Last();
+        (DateTime entranceTime, int fee) MaxEnteranceAmount = allEnteranceFee.Last();
 
-        while ((MaxEnteranceAmount.Item1 - allEnteranceFee[previuseEnterance].Item1).TotalMinutes <= 60 && previuseEnterance >= 0)
+        while ((MaxEnteranceAmount.entranceTime - allEnteranceFee[previuseEnterance].entranceTime).TotalMinutes <= 60 && previuseEnterance >= 0)
         {
-            if (MaxEnteranceAmount.Item2 <= allEnteranceFee[previuseEnterance].Item2)
+            if (MaxEnteranceAmount.fee <= allEnteranceFee[previuseEnterance].fee)
                 MaxEnteranceAmount = allEnteranceFee[previuseEnterance];
             previuseEnterance--;
         }
