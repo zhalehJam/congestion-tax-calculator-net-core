@@ -1,8 +1,11 @@
-﻿namespace congestion.calculator
+﻿using System;
+using System.Collections.Generic;
+
+namespace congestion.calculator
 {
     public interface IRepository
     {
-        void GetFreeDates();
-        void GetSpecialTimesTollFee();
+        List<DateTime> GetFreeDates();
+        int GetSpecialTimesTollFee();
     }
 }

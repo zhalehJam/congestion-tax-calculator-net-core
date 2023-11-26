@@ -1,19 +1,30 @@
-﻿using System;
+﻿using DBContext;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace congestion.calculator.Services
 {
     public class Repository : IRepository
     {
-        public void GetFreeDates()
-        {
+        private readonly TollCalculationDBContext _dBContext;
 
+        public Repository(TollCalculationDBContext dBContext)
+        {
+            _dBContext = dBContext;
+        }
+        public List<DateTime> GetFreeDates()
+        {
+            var freeDatesOfYear = new List<DateTime>();
+            freeDatesOfYear = _dBContext.YearDayTypes.Where(d => d.IsfreeDate).Select(d => d.DateOfYear).ToList();
+            return freeDatesOfYear;
         }
 
-        public void GetSpecialTimesTollFee()
+        public int GetSpecialTimesTollFee()
         {
-            throw new NotImplementedException();
+            return 0;
         }
     }
 }

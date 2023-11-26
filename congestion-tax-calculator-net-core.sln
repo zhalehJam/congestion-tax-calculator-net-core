@@ -5,6 +5,10 @@ VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "congestion-tax-calculator-net-core", "congestion-tax-calculator-net-core.csproj", "{C13FBEBC-A8BD-433F-A578-D1B35BFCBC19}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBContext", "..\DBContext\DBContext.csproj", "{D1654DA6-8F3E-49B4-AE9B-D4D55242826B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculateToll", "..\CalculateToll\CalculateToll.csproj", "{F61140E4-E81E-475B-85D9-572D06EE6106}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{C13FBEBC-A8BD-433F-A578-D1B35BFCBC19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C13FBEBC-A8BD-433F-A578-D1B35BFCBC19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C13FBEBC-A8BD-433F-A578-D1B35BFCBC19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1654DA6-8F3E-49B4-AE9B-D4D55242826B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1654DA6-8F3E-49B4-AE9B-D4D55242826B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1654DA6-8F3E-49B4-AE9B-D4D55242826B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1654DA6-8F3E-49B4-AE9B-D4D55242826B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F61140E4-E81E-475B-85D9-572D06EE6106}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F61140E4-E81E-475B-85D9-572D06EE6106}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F61140E4-E81E-475B-85D9-572D06EE6106}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F61140E4-E81E-475B-85D9-572D06EE6106}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
