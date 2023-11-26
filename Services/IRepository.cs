@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace congestion.calculator
+namespace congestion.calculator.Services
 {
     public interface IRepository
     {
