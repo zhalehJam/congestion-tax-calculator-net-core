@@ -8,12 +8,12 @@ namespace congestion.calculator.Queries
         public int MaxTollFeeOfEveryDay { get; private set; }
         public int SpecificYear { get; private set; }
         public bool DoesCityHaveAnySpecificYear { get; set; }
-        private readonly IYearDayType yearDayType;
-        private readonly ISpecialTimesTollFee specialTimesTollFee;
+        private readonly IGetyearDayType GetyearDayType;
+        private readonly IGetSpecialTimesTollFee specialTimesTollFee;
 
-        public RoleOfDayToll(IYearDayType yearDayType, ISpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
+        public RoleOfDayToll(IGetyearDayType GetyearDayType, IGetSpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
         {
-            this.yearDayType = yearDayType;
+            this.GetyearDayType = GetyearDayType;
             this.specialTimesTollFee = specialTimesTollFee;
             DoesCityHaveAnySpecificYear = doesCityHaveAnySpecificYear;
             GetMaxTollFeeOfEveryDay();
@@ -28,24 +28,24 @@ namespace congestion.calculator.Queries
             }
         }
 
-        public int GetTollFee(DateTime date, Vehicle vehicle)
+        public int GetTollFee(DateTime date, IVehicle vehicle)
         {
-            if (IsTollFreeDate(date, yearDayType) || IsTollFreeVehicle(vehicle))
+            if (IsTollFreeDate(date, GetyearDayType) || IsTollFreeVehicle(vehicle))
                 return 0;
             return GetSpecialTimesTollFee(date.TimeOfDay);
 
         }
 
-        private bool IsTollFreeDate(DateTime date, IYearDayType yearDayType)
+        private bool IsTollFreeDate(DateTime date, IGetyearDayType GetyearDayType)
         {
             if (DoesCityHaveAnySpecificYear && date.Year == SpecificYear)
             {
-                return yearDayType.IsOffDay(date);
+                return GetyearDayType.IsOffDay(date);
             }
             return false;
         }
 
-        private bool IsTollFreeVehicle(Vehicle vehicle)
+        private bool IsTollFreeVehicle(IVehicle vehicle)
         {
             string vehicleType = vehicle.GetVehicleType();
             return Enum.IsDefined(typeof(TollFreeVehicles), vehicleType);

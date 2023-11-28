@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace congestion.calculator.Services
 {
-    public class YearDayType : IYearDayType
+    public class GetyearDayType : IGetyearDayType
     {
         private readonly IRepository _repository;
 
-        public YearDayType(IRepository repository)
+        public GetyearDayType(IRepository repository)
         {
             _repository = repository;
         }

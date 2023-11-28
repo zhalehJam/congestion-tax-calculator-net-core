@@ -8,8 +8,8 @@ namespace congestion.calculator.Commands
 {
     public partial class CongestionTaxCalculator
     {
-        private readonly IYearDayType yearDayType;
-        private readonly ISpecialTimesTollFee specialTimesTollFee;
+        private readonly IGetyearDayType GetyearDayType;
+        private readonly IGetSpecialTimesTollFee specialTimesTollFee;
         private RoleOfDayToll infoOfDayToll;
         /**
     * Calculate the total toll fee for one day
@@ -19,14 +19,14 @@ namespace congestion.calculator.Commands
     * @return - the total congestion tax for that day
 */
 
-        public CongestionTaxCalculator(IYearDayType yearDayType, ISpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
+        public CongestionTaxCalculator(IGetyearDayType GetyearDayType, IGetSpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
         {
-            this.yearDayType = yearDayType;
+            this.GetyearDayType = GetyearDayType;
             this.specialTimesTollFee = specialTimesTollFee;
-            infoOfDayToll = new RoleOfDayToll(yearDayType, specialTimesTollFee, doesCityHaveAnySpecificYear);
+            infoOfDayToll = new RoleOfDayToll(GetyearDayType, specialTimesTollFee, doesCityHaveAnySpecificYear);
         }
 
-        public int GetTax(Vehicle vehicle, DateTime[] dates)
+        public int GetTax(IVehicle vehicle, DateTime[] dates)
         {
             int maxTollAmountPerDay = infoOfDayToll.MaxTollFeeOfEveryDay;
             int totalFee = 0;
@@ -40,7 +40,7 @@ namespace congestion.calculator.Commands
             return totalFee;
         }
 
-        private List<(DateTime entranceTime, int fee)> CalculateTheListOFPayableToll(Vehicle vehicle, DateTime[] dates)
+        private List<(DateTime entranceTime, int fee)> CalculateTheListOFPayableToll(IVehicle vehicle, DateTime[] dates)
         {
             List<(DateTime entranceTime, int fee)> selectedEnteranceAmount = new();
 

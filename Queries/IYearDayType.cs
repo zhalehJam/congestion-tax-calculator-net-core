@@ -2,7 +2,7 @@
 
 namespace congestion.calculator.Queries
 {
-    public interface IYearDayType
+    public interface IGetyearDayType
     {
         bool IsOffDay(DateTime date);
     }

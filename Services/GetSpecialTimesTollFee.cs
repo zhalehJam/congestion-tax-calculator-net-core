@@ -3,11 +3,11 @@ using System;
 
 namespace congestion.calculator.Services
 {
-    public class SpecialTimesTollFee : ISpecialTimesTollFee
+    public class GetSpecialTimesTollFee : IGetSpecialTimesTollFee
     {
         private readonly IRepository _repository;
 
-        public SpecialTimesTollFee(IRepository repository)
+        public GetSpecialTimesTollFee(IRepository repository)
         {
             _repository = repository;
         }

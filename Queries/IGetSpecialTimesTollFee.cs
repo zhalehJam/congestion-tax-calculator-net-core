@@ -2,7 +2,7 @@
 
 namespace congestion.calculator.Queries
 {
-    public interface ISpecialTimesTollFee
+    public interface IGetSpecialTimesTollFee
     {
         int GetFee(TimeSpan timeOfDate);
     }
