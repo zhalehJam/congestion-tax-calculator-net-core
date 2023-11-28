@@ -19,11 +19,11 @@ namespace congestion.calculator.Commands
     * @return - the total congestion tax for that day
 */
 
-        public CongestionTaxCalculator(IYearDayType yearDayType, ISpecialTimesTollFee specialTimesTollFee)
+        public CongestionTaxCalculator(IYearDayType yearDayType, ISpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
         {
             this.yearDayType = yearDayType;
             this.specialTimesTollFee = specialTimesTollFee;
-            infoOfDayToll = new InfoOfDayToll(yearDayType, specialTimesTollFee);
+            infoOfDayToll = new InfoOfDayToll(yearDayType, specialTimesTollFee, doesCityHaveAnySpecificYear);
         }
 
         public int GetTax(Vehicle vehicle, DateTime[] dates)
@@ -31,9 +31,9 @@ namespace congestion.calculator.Commands
             int maxTollAmountPerDay = infoOfDayToll.MaxTollFeeOfEveryDay;
             int totalFee = 0;
             List<(DateTime entranceTime, int fee)> selectedEnterance = CalculateTheListOFPayableToll(vehicle, dates);
-            
+
             //TODO: Problem about midnight hour and entrances
-            
+
             totalFee = selectedEnterance.GroupBy(e => e.entranceTime.Date)
                                         .Select(w => new { w.Key.Date, dayTaxAmount = w.Sum(e => e.fee) })
                                         .Sum(e => e.dayTaxAmount > maxTollAmountPerDay ? maxTollAmountPerDay : e.dayTaxAmount);
@@ -54,7 +54,7 @@ namespace congestion.calculator.Commands
             }
             return selectedEnteranceAmount;
         }
-         
+
         private List<(DateTime entranceTime, int fee)> ReFillListBasedNewEntrance(List<(DateTime entranceTime, int fee)> listOFEnteranceAmount,
                                                                                   DateTime newEntranceDate)
         {
@@ -63,7 +63,7 @@ namespace congestion.calculator.Commands
                                                                .OrderBy(e => e.fee)
                                                                .ToList();
 
-            if (listOfLastHourEntrances.Count() != 1)
+            if (listOfLastHourEntrances.Count() > 1)
             {
                 var maxone = listOfLastHourEntrances.Last();
                 EnteranceAmount.RemoveAll(r => listOfLastHourEntrances.Any(e => e.Equals(r)));

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using congestion.calculator.Queries;
+using System;
 using System.Linq;
 
 namespace congestion.calculator.Services
@@ -13,14 +14,11 @@ namespace congestion.calculator.Services
         }
         public bool IsOffDay(DateTime date)
         {
-
-            //TODO : Should define the services and Get from DB
-
             if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
                 return true;
 
             return _repository.GetFreeDates().Any(e => e.Equals(date));
- 
+
         }
     }
 }

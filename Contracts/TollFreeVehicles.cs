@@ -1,4 +1,4 @@
-﻿namespace congestion.calculator.Services
+﻿namespace congestion.calculator.Contracts
 {
     public enum TollFreeVehicles
     {
