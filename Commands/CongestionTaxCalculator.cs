@@ -2,31 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using congestion.calculator.Queries;
+using congestion.calculator.Queries.Services;
 using congestion.calculator.Services;
 
 namespace congestion.calculator.Commands
 {
     public partial class CongestionTaxCalculator
     {
-        private readonly IYearDayType yearDayType;
-        private readonly ISpecialTimesTollFee specialTimesTollFee;
-        private InfoOfDayToll infoOfDayToll;
-        /**
-    * Calculate the total toll fee for one day
-    *
-    * @param vehicle - the vehicle
-    * @param dates   - date and time of all passes on one day
-    * @return - the total congestion tax for that day
-*/
+        private readonly IGetyearDayType _getyearDayType;
+        private readonly IGetSpecialTimesTollFee _specialTimesTollFee;
+        private RoleOfDayToll infoOfDayToll;
+  
 
-        public CongestionTaxCalculator(IYearDayType yearDayType, ISpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
+        public CongestionTaxCalculator(IGetyearDayType GetyearDayType, IGetSpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
         {
-            this.yearDayType = yearDayType;
-            this.specialTimesTollFee = specialTimesTollFee;
-            infoOfDayToll = new InfoOfDayToll(yearDayType, specialTimesTollFee, doesCityHaveAnySpecificYear);
+            _getyearDayType = GetyearDayType;
+            _specialTimesTollFee = specialTimesTollFee;
+            infoOfDayToll = new RoleOfDayToll(GetyearDayType, specialTimesTollFee, doesCityHaveAnySpecificYear);
         }
 
-        public int GetTax(Vehicle vehicle, DateTime[] dates)
+        public int GetTax(IVehicle vehicle, DateTime[] dates)
         {
             int maxTollAmountPerDay = infoOfDayToll.MaxTollFeeOfEveryDay;
             int totalFee = 0;
@@ -40,7 +35,7 @@ namespace congestion.calculator.Commands
             return totalFee;
         }
 
-        private List<(DateTime entranceTime, int fee)> CalculateTheListOFPayableToll(Vehicle vehicle, DateTime[] dates)
+        private List<(DateTime entranceTime, int fee)> CalculateTheListOFPayableToll(IVehicle vehicle, DateTime[] dates)
         {
             List<(DateTime entranceTime, int fee)> selectedEnteranceAmount = new();
 
