@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace congestion.calculator.Queries
+namespace congestion.calculator.Queries.Services
 {
     public interface IGetSpecialTimesTollFee
     {

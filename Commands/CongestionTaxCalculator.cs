@@ -2,27 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using congestion.calculator.Queries;
+using congestion.calculator.Queries.Services;
 using congestion.calculator.Services;
 
 namespace congestion.calculator.Commands
 {
     public partial class CongestionTaxCalculator
     {
-        private readonly IGetyearDayType GetyearDayType;
-        private readonly IGetSpecialTimesTollFee specialTimesTollFee;
+        private readonly IGetyearDayType _getyearDayType;
+        private readonly IGetSpecialTimesTollFee _specialTimesTollFee;
         private RoleOfDayToll infoOfDayToll;
-        /**
-    * Calculate the total toll fee for one day
-    *
-    * @param vehicle - the vehicle
-    * @param dates   - date and time of all passes on one day
-    * @return - the total congestion tax for that day
-*/
+  
 
         public CongestionTaxCalculator(IGetyearDayType GetyearDayType, IGetSpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
         {
-            this.GetyearDayType = GetyearDayType;
-            this.specialTimesTollFee = specialTimesTollFee;
+            _getyearDayType = GetyearDayType;
+            _specialTimesTollFee = specialTimesTollFee;
             infoOfDayToll = new RoleOfDayToll(GetyearDayType, specialTimesTollFee, doesCityHaveAnySpecificYear);
         }
 

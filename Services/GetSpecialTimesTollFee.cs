@@ -1,4 +1,4 @@
-﻿using congestion.calculator.Queries;
+﻿using congestion.calculator.Queries.Services;
 using System;
 
 namespace congestion.calculator.Services

@@ -1,18 +1,13 @@
 ﻿using congestion.calculator.Contracts.Models;
-using congestion.calculator.Queries;
+using congestion.calculator.Queries.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace congestion.calculator.Commands
 {
     public class AddNewSpecialTimeTollFee
     {
-        private readonly IAddNewSpecialTimeTollFeeService addNewSpecialTimeTollFeeService;
-        private readonly IGetSpecialTimesTollFee getSpecialTimesTollFee;
+        private readonly IAddNewSpecialTimeTollFeeService _addNewSpecialTimeTollFeeService;
+        private readonly IGetSpecialTimesTollFee _getSpecialTimesTollFee;
 
         public SpecialTimeTollFee SpecialTimeTollFee { get; private set; }
 
@@ -21,8 +16,8 @@ namespace congestion.calculator.Commands
                                         IAddNewSpecialTimeTollFeeService addNewSpecialTimeTollFeeService,
                                         IGetSpecialTimesTollFee getSpecialTimesTollFee)
         {
-            this.addNewSpecialTimeTollFeeService = addNewSpecialTimeTollFeeService;
-            this.getSpecialTimesTollFee = getSpecialTimesTollFee;
+            _addNewSpecialTimeTollFeeService = addNewSpecialTimeTollFeeService;
+            _getSpecialTimesTollFee = getSpecialTimesTollFee;
             SetSpecialTollFeeTime(specialTimeTollFee, getSpecialTimesTollFee);
 
             addNewSpecialTimeTollFeeService.AddNewSpecialTimeTollFee(specialTimeTollFee);

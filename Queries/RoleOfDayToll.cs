@@ -1,4 +1,5 @@
 ﻿using congestion.calculator.Contracts;
+using congestion.calculator.Queries.Services;
 using System;
 
 namespace congestion.calculator.Queries
@@ -7,30 +8,24 @@ namespace congestion.calculator.Queries
     {
         public int MaxTollFeeOfEveryDay { get; private set; }
         public int SpecificYear { get; private set; }
-        public bool DoesCityHaveAnySpecificYear { get; set; }
-        private readonly IGetyearDayType GetyearDayType;
-        private readonly IGetSpecialTimesTollFee specialTimesTollFee;
+        public bool DoesCityHaveAnySpecificYear { get; private set; }
+        private readonly IGetyearDayType _getyearDayType;
+        private readonly IGetSpecialTimesTollFee _specialTimesTollFee;
 
-        public RoleOfDayToll(IGetyearDayType GetyearDayType, IGetSpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
+        public RoleOfDayToll(IGetyearDayType GetyearDayType,
+                             IGetSpecialTimesTollFee specialTimesTollFee,
+                             bool doesCityHaveAnySpecificYear)
         {
-            this.GetyearDayType = GetyearDayType;
-            this.specialTimesTollFee = specialTimesTollFee;
+            _getyearDayType = GetyearDayType;
+            _specialTimesTollFee = specialTimesTollFee;
             DoesCityHaveAnySpecificYear = doesCityHaveAnySpecificYear;
             GetMaxTollFeeOfEveryDay();
             SetSpecificYear(doesCityHaveAnySpecificYear);
         }
 
-        private void SetSpecificYear(bool DoesCityHaveAnySpecificYear)
-        {
-            if (DoesCityHaveAnySpecificYear)
-            {
-                SpecificYear = 2013;
-            }
-        }
-
         public int GetTollFee(DateTime date, IVehicle vehicle)
         {
-            if (IsTollFreeDate(date, GetyearDayType) || IsTollFreeVehicle(vehicle))
+            if (IsTollFreeDate(date, _getyearDayType) || IsTollFreeVehicle(vehicle))
                 return 0;
             return GetSpecialTimesTollFee(date.TimeOfDay);
 
@@ -53,13 +48,22 @@ namespace congestion.calculator.Queries
 
         private int GetSpecialTimesTollFee(TimeSpan timeOfDate)
         {
-            return specialTimesTollFee.GetFee(timeOfDate);
+            return _specialTimesTollFee.GetFee(timeOfDate);
         }
 
         private void GetMaxTollFeeOfEveryDay()
         {
             //TODO : get amount from DB
             MaxTollFeeOfEveryDay = 60;
+        }
+
+
+        private void SetSpecificYear(bool DoesCityHaveAnySpecificYear)
+        {
+            if (DoesCityHaveAnySpecificYear)
+            {
+                SpecificYear = 2013;
+            }
         }
 
     }

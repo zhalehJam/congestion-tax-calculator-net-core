@@ -1,6 +1,5 @@
 ﻿using congestion.calculator.Contracts.Models;
-using congestion.calculator.Queries;
-using System;
+using congestion.calculator.Queries.Services; 
 
 namespace congestion.calculator.Services
 {

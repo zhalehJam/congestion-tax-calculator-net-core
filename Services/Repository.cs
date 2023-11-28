@@ -1,10 +1,8 @@
 ﻿using congestion.calculator.Contracts.Models;
 using DBContext;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace congestion.calculator.Services
 {
