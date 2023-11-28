@@ -1,6 +1,6 @@
-﻿public partial class CongestionTaxCalculator
+﻿namespace congestion.calculator.Contracts
 {
-    private enum TollFreeVehicles
+    public enum TollFreeVehicles
     {
         Motorcycle = 0,
         Tractor = 1,
