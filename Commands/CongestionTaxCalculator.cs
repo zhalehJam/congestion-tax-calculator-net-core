@@ -10,7 +10,7 @@ namespace congestion.calculator.Commands
     {
         private readonly IYearDayType yearDayType;
         private readonly ISpecialTimesTollFee specialTimesTollFee;
-        private InfoOfDayToll infoOfDayToll;
+        private RoleOfDayToll infoOfDayToll;
         /**
     * Calculate the total toll fee for one day
     *
@@ -23,7 +23,7 @@ namespace congestion.calculator.Commands
         {
             this.yearDayType = yearDayType;
             this.specialTimesTollFee = specialTimesTollFee;
-            infoOfDayToll = new InfoOfDayToll(yearDayType, specialTimesTollFee, doesCityHaveAnySpecificYear);
+            infoOfDayToll = new RoleOfDayToll(yearDayType, specialTimesTollFee, doesCityHaveAnySpecificYear);
         }
 
         public int GetTax(Vehicle vehicle, DateTime[] dates)

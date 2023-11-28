@@ -3,7 +3,7 @@ using System;
 
 namespace congestion.calculator.Queries
 {
-    public class InfoOfDayToll
+    public class RoleOfDayToll
     {
         public int MaxTollFeeOfEveryDay { get; private set; }
         public int SpecificYear { get; private set; }
@@ -11,7 +11,7 @@ namespace congestion.calculator.Queries
         private readonly IYearDayType yearDayType;
         private readonly ISpecialTimesTollFee specialTimesTollFee;
 
-        public InfoOfDayToll(IYearDayType yearDayType, ISpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
+        public RoleOfDayToll(IYearDayType yearDayType, ISpecialTimesTollFee specialTimesTollFee, bool doesCityHaveAnySpecificYear)
         {
             this.yearDayType = yearDayType;
             this.specialTimesTollFee = specialTimesTollFee;

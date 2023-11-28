@@ -22,9 +22,11 @@ namespace congestion.calculator.Services
             return freeDatesOfYear;
         }
 
-        public int GetSpecialTimesTollFee()
+        public int GetSpecialTimeTollFee(TimeSpan time)
         {
-            return 0;
+            var specialTime = _dBContext.SpecialTimeTollFees.FirstOrDefault(s => s.FromTime <= time && s.ToTime >= time);
+            return specialTime == null ? 0 : specialTime.TollFee;
         }
+
     }
 }
